@@ -317,4 +317,43 @@ public void deveDevolverNaSegundaAoAlugarNoSabado(){
         Assert.assertTrue(ehSegunda);
 }
 ```
+
+# Usando Suite de Testes.
+
+A suite de testes é ideal quando queremos realizar alguma configuração antes ou depois de 
+da execução de uma série de testes.
+
+Poderiamos configurar uma conexão de banco de dados por exemplo.
+
+Exemplo:
+
+```java
+
+@RunWith(Suite.class)
+@SuiteClasses({
+        LocacaoServiceTest.class
+})
+public class SuiteExecucao {
+
+    /*
+    * Os métodos before e after serão executados antes e depois de toda a bateria de testes...
+    *
+    * */
+
+    @BeforeClass
+    public static void before(){
+        System.out.println("before");
+    }
+
+    @AfterClass
+    public static void after(){
+        System.out.println("after");
+    }
+}
  
+
+```
+
+O ponto negativo desta abordagem é que ao usarmos uma ferramenta de integração continua, ela executará os testes individualmente
++ a execução o que dobrará o número de vezes que nossos testes serão rodados gerando um processamento maior.
+

@@ -1,12 +1,6 @@
 package br.ce.wcaquino.servicos;
 
-import static br.ce.wcaquino.utils.DataUtils.adicionarDias;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
+import br.ce.wcaquino.daos.LocacaoDao;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -14,7 +8,21 @@ import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.utils.DataUtils;
 
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import static br.ce.wcaquino.utils.DataUtils.adicionarDias;
+
 public class LocacaoService {
+
+	private LocacaoDao dao;
+	private SpcService spcService;
+
+//	public LocacaoService(LocacaoDao dao){
+//		this.dao = dao;
+//	}
 	
 	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws FilmeSemEstoqueException,LocadoraException {
 
@@ -28,6 +36,9 @@ public class LocacaoService {
 
 		validaEstoque(filmes);
 
+		if(spcService.possuiNegativacao(usuario)){
+			throw new RuntimeException("Usuario negativado");
+		}
 
 		Locacao locacao = new Locacao();
 		locacao.setFilmes(filmes);
@@ -43,25 +54,12 @@ public class LocacaoService {
 		locacao.setDataRetorno(dataEntrega);
 		
 		//Salvando a locacao...	
-		//TODO adicionar método para salvar
+		dao.salvar(locacao);
 		
 		return locacao;
 	}
 	
-	public static void main(String[] args) throws Exception {
-		//cenario
-		LocacaoService service = new LocacaoService();
-		Usuario usuario = new Usuario("Usuario 1");
-        List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 2, 5.0));
 
-        //acao
-		Locacao locacao = service.alugarFilme(usuario, filmes);
-		
-		//verificacao
-		System.out.println(locacao.getValor() == 5.0);
-		System.out.println(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
-		System.out.println(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)));
-	}
 
 	private void validaEstoque(List<Filme> filmes){
         filmes.forEach(f->{
@@ -70,4 +68,13 @@ public class LocacaoService {
             }
         });
     }
+
+    public void setLocacaoDao(LocacaoDao dao){
+		this.dao = dao;
+	}
+
+	public void setSpcService(SpcService spc){
+		this.spcService = spc;
+	}
+
 }

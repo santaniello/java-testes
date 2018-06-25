@@ -1,24 +1,21 @@
 package br.ce.wcaquino.servicos;
 
+import br.ce.wcaquino.daos.LocacaoDao;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
-import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
-import br.ce.wcaquino.exceptions.LocadoraException;
-import br.ce.wcaquino.utils.DataUtils;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ErrorCollector;
-import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class LocacaoServiceTest {
 
@@ -38,6 +35,10 @@ public class LocacaoServiceTest {
     @Before
     public void init(){
         this.service = new LocacaoService();
+        LocacaoDao dao = Mockito.mock(LocacaoDao.class);
+        SpcService spcService = Mockito.mock(SpcService.class);
+        service.setLocacaoDao(dao);
+        service.setSpcService(spcService);
     }
 
     @After

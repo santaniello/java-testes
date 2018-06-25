@@ -1,19 +1,24 @@
 package br.ce.wcaquino.testesunitarios;
 
+import br.ce.wcaquino.daos.LocacaoDao;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.LocadoraException;
+import br.ce.wcaquino.matchers.MatchersProprios;
 import br.ce.wcaquino.servicos.LocacaoService;
+import br.ce.wcaquino.servicos.SpcService;
 import br.ce.wcaquino.utils.DataUtils;
 import org.junit.*;
 import org.junit.rules.ErrorCollector;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static br.ce.wcaquino.matchers.MatchersProprios.*;
 import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -37,6 +42,10 @@ public class ControlTestExecution {
     @Before
     public void init(){
         this.service = new LocacaoService();
+        LocacaoDao dao = Mockito.mock(LocacaoDao.class);
+        SpcService spcService = Mockito.mock(SpcService.class);
+        service.setLocacaoDao(dao);
+        service.setSpcService(spcService);
     }
 
     @After
@@ -94,6 +103,8 @@ public class ControlTestExecution {
 
         boolean ehSegunda = DataUtils.verificarDiaSemana(resultado.getDataRetorno(),Calendar.MONDAY);
         Assert.assertTrue(ehSegunda);
+        assertThat(resultado.getDataRetorno(), caiEm(Calendar.MONDAY));
+
 
     }
 }
